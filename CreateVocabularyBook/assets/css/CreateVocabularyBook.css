@@ -1,0 +1,677 @@
+@font-face {
+    font-family: 'Zen Maru Gothic 400';
+    src: url('../../../source/fonts/ZenMaruGothic-Regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Zen Maru Gothic 500';
+    src: url('../../../source/fonts/ZenMaruGothic-Medium.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Zen Maru Gothic 700';
+    src: url('../../../source/fonts/ZenMaruGothic-Bold.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Share Tech Mono 400';
+    src: url('../../../source/fonts/ShareTechMono-Regular.ttf') format('truetype');
+}
+
+/* ゼン丸ゴシックのベース設定 */
+body, .font-zen-maru {
+    font-family: 'Zen Maru Gothic 400', sans-serif;
+}
+
+/* すべてのフォーム要素、ボタン類のフォントをZen Maru Gothicに統一 */
+button, input, select, textarea, .control-bar-btn, .file-input-label, .template-btn {
+    font-family: 'Zen Maru Gothic 400', sans-serif !important;
+}
+
+/* 印刷用紙（A3 landscape）の実寸・縦スクロール用CSS */
+@page {
+    size: A3 landscape;
+    margin: 0;
+}
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #f1f5f9; /* 画面表示時の背景 */
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    color: #1e293b;
+}
+#book-container {
+    width: 420mm;
+    margin: 80px 0 0 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+.a3-page {
+    width: 420mm;
+    height: 297mm;
+    display: flex;
+    flex-direction: column;
+    page-break-after: always;
+    break-after: page;
+    box-sizing: border-box;
+    position: relative;
+    background-color: #ffffff;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 25px;
+    padding: 12mm 12mm;
+}
+
+/* 印刷時はシャドウや余白を消す */
+@media print {
+    body {
+    background-color: #ffffff !important;
+    background: white !important;
+    }
+    #book-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    }
+    .a3-page {
+    box-shadow: none !important;
+    margin-bottom: 0 !important;
+    width: 420mm !important;
+    height: 297mm !important;
+    }
+    .no-print {
+    display: none !important;
+    }
+}
+
+/* PDF出力用クローン内のページ要素（マージンや角丸を排除し A3 に完全にフィットさせます） */
+.pdf-print-active {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+.pdf-print-active .no-print {
+    display: none !important;
+}
+
+/* PDF出力された各ページの左上に配置する「編集URLパラメータ付き」SVGリンク用CSS */
+.a3-page-edit-link {
+    position: absolute;
+    top: 5mm;
+    left: 12mm;
+    z-index: 40;
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+    transition: opacity 0.2s;
+}
+.a3-page-edit-link:hover {
+    opacity: 0.7;
+}
+
+/* 中央の折り目ガイド線 (破線のみ・テキスト非表示) */
+.fold-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 210mm;
+    z-index: 20;
+    pointer-events: none;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+    height: 100%;
+    box-sizing: border-box;
+}
+.fold-line-dashed {
+    height: 100%;
+    width: 0;
+    border-left: 1px dashed #cbd5e1;
+    opacity: 0.5;
+}
+
+/* A3全体を4等分（各25%幅）にするヘッダーとコンテンツ設計 */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-bottom: 1px dashed #e2e8f0;
+    padding-bottom: 6px;
+    margin-bottom: 0;
+    height: 24px;
+    box-sizing: border-box;
+}
+.header-title {
+    font-family: 'Zen Maru Gothic 700';
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: #94a3b8;
+    text-transform: uppercase;
+    box-sizing: border-box;
+    width: 25%;
+    padding-left: 15px;
+}
+.header-title:first-child {
+    padding-left: 0;
+}
+
+.page-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* 均等な4等分セルと3行（3単語）構成 */
+.row-four {
+    flex: 1;
+    display: flex;
+    box-sizing: border-box;
+}
+.row-four-border {
+    border-bottom: 1px dashed #e2e8f0;
+}
+.cell-four {
+    width: 25%; /* 4等分 */
+    padding: 0;
+    margin: 0.75em 0;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border-right: 1px dashed #e2e8f0;
+}
+/* 中央折り目位置の境界線設定、および2列目のパディング設定 */
+.cell-four:nth-child(2) {
+    border-right: none;
+}
+.cell-four:last-child {
+    border-right: none;
+}
+
+/* .word-title-container の親要素ラッパー */
+.word-title-wrapper {
+    padding-right: 15px;
+    box-sizing: border-box;
+}
+
+/* 単語・IDタイトル（横並び、完全に高さを中央揃え） */
+.word-id {
+    font-family: 'Share Tech Mono 400' !important;
+    font-size: 10px;
+    color: #94a3b8;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 0.8px 0 0 0;
+    border-radius: 4px;
+    line-height: 16px;
+    display: inline-block;
+    width: 34px;
+    height: 16px;
+    text-align: center;
+    vertical-align: middle;
+    box-sizing: border-box;
+    margin-right: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.word-id:hover {
+    background-color: #cbd5e1;
+    color: #1e1b4b;
+}
+.word-text {
+    font-family: 'Zen Maru Gothic 700';
+    font-size: 20px;
+    color: #2a2a2a;
+    vertical-align: middle;
+    letter-spacing: -0.02em;
+}
+
+/* PDF印刷時にはIDのクリック可能エフェクトを無効化 */
+@media print {
+    .word-id {
+    cursor: default !important;
+    background-color: #f8fafc !important;
+    color: #94a3b8 !important;
+    }
+}
+
+/* 抽出された追加英語（活用補足）用テキストスタイル */
+.word-extra-text {
+    font-family: 'Zen Maru Gothic 500';
+    font-size: 16px;
+    color: #2a2a2a;
+    margin-left: 44px;
+    line-height: 1.2;
+}
+
+/* 見出し品詞・意味を囲むラッパーのパディングをstyleタグに定義 */
+.pos-meaning-wrapper {
+    padding: 0 15px;
+    box-sizing: border-box;
+}
+
+/* 品詞バッジ（角丸正方形） & 意味 */
+.pos-meaning-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.pos-row {
+    display: flex;
+    align-items: start;
+    gap: 8px;
+    font-size: 14px;
+}
+.pos-badge {
+    font-family: 'Zen Maru Gothic 700';
+    font-size: 11px;
+    color: #1e1b4b;
+    background-color: rgba(240, 244, 255, 0.8);
+    border: 1px solid #c7d2fe;
+    height: 19px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    margin-top: 1px;
+    box-sizing: border-box;
+    padding: 0 2.8px 0 3px;
+}
+.pos-meaning {
+    font-family: 'Zen Maru Gothic 500';
+    color: #2a2a2a;
+    line-height: 1.5;
+}
+
+/* 1列目の関連語の単語用コンテナ */
+.relatives-word-container {
+    margin-top: 6px;
+    margin-left: 34px;
+    border-left: 2px solid #a5b4fc;
+    padding: 7px 15px 7px 8px;
+    box-sizing: border-box;
+    background: #f4f7ff;
+}
+
+/* 2列目の関連語の品詞・意味用コンテナ */
+.relatives-container {
+    margin-top: 6px;
+    padding: 7px 15px;
+    border-left: none;
+    box-sizing: border-box;
+    background: #f4f7ff;
+}
+
+/* 3列目の関連語例文用コンテナ */
+.relatives-sentence-container {
+    margin-top: 6px;
+    padding: 7px 15px;
+    box-sizing: border-box;
+    background: #f4f7ff;
+}
+
+/* 4列目の関連語訳用コンテナ */
+.relatives-translation-container {
+    margin-top: 6px;
+    padding: 7px 15px;
+    box-sizing: border-box;
+    background: #f4f7ff;
+}
+
+/* 1列目用の関連語単語単体スタイル */
+.relative-word-item {
+    font-family: 'Zen Maru Gothic 700';
+    font-size: 16px;
+    color: #2a2a2a;
+    height: 20px;
+    display: block;
+    line-height: 20px;
+    margin-bottom: 7px;
+    word-break: break-all;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.relative-word-item:last-child {
+    margin-bottom: 0;
+}
+
+/* 2列目用の関連語品詞・意味行アライメント */
+.relative-meaning-row {
+    height: 20px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 7px;
+}
+.relative-meaning-row:last-child {
+    margin-bottom: 0;
+}
+
+/* 3列目の関連語例文用コンテナ */
+.relative-sentence-item {
+    font-family: 'Zen Maru Gothic 700';
+    font-size: 13px;
+    color: #2a2a2a;
+    height: 20px;
+    display: block;
+    line-height: 20px;
+    margin-bottom: 7px;
+    word-break: break-all;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.relative-sentence-item:last-child {
+    margin-bottom: 0;
+}
+
+/* 4列目の関連語和訳スタイル */
+.relative-translation-item {
+    font-family: 'Zen Maru Gothic 500';
+    font-size: 11px;
+    color: #2a2a2a;
+    height: 20px;
+    display: block;
+    line-height: 20px;
+    margin-bottom: 7px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.relative-translation-item:last-child {
+    margin-bottom: 0;
+}
+
+.relative-pos-badge-container {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+.relative-pos-badge {
+    font-family: 'Zen Maru Gothic 700';
+    font-size: 10px;
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 2px;
+    padding: 0 3.5px;
+    height: 17px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #475569;
+}
+.relative-meaning {
+    font-family: 'Zen Maru Gothic 500';
+    font-size: 12.5px;
+    color: #2a2a2a;
+}
+
+/* 例文テキスト*/
+.sentence-eng-text {
+    font-family: 'Zen Maru Gothic 700';
+    font-size: 15px;
+    color: #2a2a2a;
+    line-height: 2;
+    padding: 0 15px;
+    box-sizing: border-box;
+    display: block;
+    text-decoration: none;
+}
+
+/* 和訳テキスト*/
+.sentence-jpn-text {
+    font-family: 'Zen Maru Gothic 500';
+    font-size: 13px;
+    color: #2a2a2a;
+    line-height: 1.6;
+    padding: 0 15px;
+    box-sizing: border-box;
+}
+
+/* ==================== 文字装飾用追加CSS（全全半角厳密設計、class指定、style定義） ==================== */
+.semi-pad {
+    padding-right: 0.2em;
+    padding-left: 0.2em;
+    display: inline-block;
+}
+.semi-pad-zero-right {
+    padding-left: 0.2em;
+    padding-right: 0 !important;
+    display: inline-block;
+}
+.comma-tight {
+    letter-spacing: -0.5em;
+    display: inline-block;
+}
+.char-tight {
+    letter-spacing: -0.5em;
+    display: inline-block;
+}
+.paren-tight {
+    letter-spacing: -0.5em;
+    display: inline-block;
+}
+/* 「》」と「（」の間にあてる文字詰めスタイル */
+.double-bracket-tight {
+    letter-spacing: -0.3em;
+    display: inline-block;
+}
+
+/* ==================== 編集画面（カード形式）用追加CSS（Indigoテーマと統一） ==================== */
+.editor-card {
+    background-color: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    box-sizing: border-box;
+    transition: border-color 0.2s, box-shadow 0.2s; /* ハイライト点滅用のアニメーション */
+}
+.editor-card h3 {
+    font-family: 'Zen Maru Gothic 700';
+    font-size: 16px;
+    color: #1e1b4b;
+    margin-top: 0;
+    margin-bottom: 16px;
+    border-bottom: 2px solid #e0e7ff;
+    padding-bottom: 8px;
+}
+/* 品詞は2列（1行に2つずつ）に変更 */
+.editor-grid-two {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+@media (max-width: 640px) {
+    .editor-grid-two {
+    grid-template-columns: 1fr;
+    }
+}
+.editor-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.editor-field label {
+    font-family: 'Zen Maru Gothic 700';
+    font-size: 11px;
+    color: #64748b;
+}
+.editor-input {
+    padding: 6px 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 13px;
+    color: #1e293b;
+    background-color: #ffffff;
+    box-sizing: border-box;
+    width: 100%;
+}
+.editor-input:focus {
+    outline: none;
+    border-color: #312e81;
+    box-shadow: 0 0 0 2px rgba(49, 46, 129, 0.1);
+}
+.editor-textarea {
+    resize: vertical;
+    min-height: 48px;
+}
+.editor-relatives-section {
+    margin-top: 20px;
+    border-top: 1px dashed #cbd5e1;
+    padding-top: 16px;
+}
+.editor-relative-card {
+    background-color: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+    position: relative;
+}
+.delete-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    color: #ef4444;
+    cursor: pointer;
+    font-family: 'Zen Maru Gothic 700';
+    font-size: 12px;
+    background: none;
+    border: none;
+}
+.delete-btn:hover {
+    color: #b91c1c;
+    text-decoration: underline;
+}
+.add-relative-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 16px;
+    background-color: #f0f4ff;
+    color: #312e81;
+    border: 1px solid #c7d2fe;
+    border-radius: 6px;
+    font-family: 'Zen Maru Gothic 700';
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.add-relative-btn:hover {
+    background-color: #e0e7ff;
+}
+
+/* アップロード画面 */
+.upload-area {
+    padding: 50px 30px;
+    border: 3px dashed #cbd5e1;
+    background-color: #ffffff;
+    border-radius: 16px;
+    text-align: center;
+    max-width: 650px;
+    margin: 80px auto;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    box-sizing: border-box;
+}
+.upload-area h2 {
+    color: #1e1b4b;
+    margin-top: 0;
+    margin-bottom: 12px;
+    font-family: 'Zen Maru Gothic 700';
+    font-size: 22px;
+}
+.upload-area p {
+    color: #64748b;
+    font-size: 14px;
+    margin-bottom: 25px;
+    line-height: 1.6;
+}
+.file-input-label {
+    display: inline-block;
+    padding: 12px 32px;
+    background-color: #312e81;
+    color: #ffffff;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Zen Maru Gothic 700';
+    font-size: 15px;
+    transition: background-color 0.2s;
+}
+.file-input-label:hover {
+    background-color: #1e1b4b;
+}
+.template-btn {
+    display: inline-block;
+    padding: 12px 32px;
+    background-color: #ffffff;
+    color: #312e81;
+    border: 1px solid #c7d2fe;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Zen Maru Gothic 700';
+    font-size: 15px;
+    transition: all 0.2s;
+    box-sizing: border-box;
+}
+.template-btn:hover {
+    background-color: #f0f4ff;
+    border-color: #312e81;
+}
+#file-input {
+    display: none;
+}
+
+/* 操作コントロールバー */
+.control-bar {
+    width: 100%;
+    background-color: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 12px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+    position: fixed;
+    top: 0;
+    z-index: 50;
+    box-sizing: border-box;
+}
+.control-bar-btn {
+    padding: 8px 20px;
+    border-radius: 6px;
+    font-family: 'Zen Maru Gothic 700';
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+.btn-primary {
+    background-color: #312e81;
+    color: #ffffff;
+    border: none;
+}
+.btn-primary:hover {
+    background-color: #1e1b4b;
+}
+.btn-secondary {
+    background-color: #ffffff;
+    color: #64748b;
+    border: 1px solid #e2e8f0;
+}
+.btn-secondary:hover {
+    background-color: #f8fafc;
+    color: #334155;
+}

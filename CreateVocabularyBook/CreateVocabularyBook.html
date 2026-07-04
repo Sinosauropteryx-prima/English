@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- 検索エンジンへのインデックスを拒否するメタタグを設置 -->
+  <meta name="robots" content="noindex" />
+  <title>英単語帳の作製</title>
+  
+  <!-- ウェブアイコン（ファビコン）の設定 -->
+  <link rel="icon" href="../source/img/notebook_icon.svg" type="image/svg+xml">
+  
+  <!-- Tailwind CSS (細部装飾用CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Lucide Icons (アイコン用CDN) -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- サイトのスタイルシート -->
+   <link rel="stylesheet" href="./assets/css/CreateVocabularyBook.css">
+
+  <!-- ======= [PDF生成用の外部ライブラリ読み込み] ======= -->
+  <!-- 1. dompdf.js -->
+  <script src="../module/dompdf.min/dompdf.min.js"></script>
+  <!-- 2. pdf-lib -->
+  <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <!-- 3. サイトのJavaScript -->
+  <script type="module" src="./assets/js/CreateVocabularyBook.js"></script>
+</head>
+<body>
+
+  <!-- ==================== アップロード画面 (初期表示のみ) ==================== -->
+  <div id="upload-container" class="upload-area no-print">
+    <h2>CSVファイルをアップロードしてください</h2>
+    <p>
+      項目が1列目、各データが2列目以降に右方向へ並んだ15行構成のCSVに対応しています。<br>
+      アップロードすると、実際の印刷レイアウト（3行 / 4等分横並び）で全ページがプレビュー表示されます。
+    </p>
+    <p id="font-status-msg"></p>
+    <p style="margin-top: 10px; margin-bottom: 25px; font-size: 13px;">ここにファイルをドラッグ＆ドロップするか、下のボタンから選択してください。</p>
+    
+    <div style="display: flex; justify-content: center; align-items: center; gap: 12px; flex-wrap: wrap;">
+      <label for="file-input" class="file-input-label">ファイルを選択する</label>
+      <button type="button" id="download-template" class="template-btn">テンプレートCSVをダウンロード</button>
+    </div>
+    <input type="file" id="file-input" accept=".csv">
+  </div>
+
+  <!-- ==================== 操作コントロールバー (CSV読み込み後に表示) ==================== -->
+  <div id="control-bar" class="control-bar no-print" style="display: none;">
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <div style="padding: 8px; border-radius: 8px; background-color: #312e81; color: #ffffff; display: flex; align-items: center; justify-content: center;">
+        <i data-lucide="book-open" class="w-4 h-4"></i>
+      </div>
+      <div>
+        <span style="font-size: 13px; font-family: 'Zen Maru Gothic 700'; color: #334155;" id="status-text">全 0 ページ</span>
+      </div>
+    </div>
+    <div style="display: flex; gap: 8px;">
+      <button class="control-bar-btn btn-secondary" onclick="resetApp()">
+        <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+        <span>別のファイルを読込</span>
+      </button>
+      <button id="toggle-view-btn" class="control-bar-btn btn-secondary" onclick="toggleView()">
+        <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+        <span>編集画面へ</span>
+      </button>
+      <button class="control-bar-btn btn-secondary" onclick="exportCSV()">
+        <i data-lucide="download" class="w-3.5 h-3.5"></i>
+        <span>CSVをエクスポート</span>
+      </button>
+      <button id="pdf-trigger" class="control-bar-btn btn-primary">
+        <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+        <span>印刷・PDF出力 (A3横)</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ==================== プレビュー表示（A3横実寸サイズ縦並び） ==================== -->
+  <div id="book-container"></div>
+
+  <!-- ==================== 編集用UI表示エリア ==================== -->
+  <div id="editor-container" class="no-print" style="display: none; padding: 30px 24px; max-width: 1200px; margin: 0 auto; box-sizing: border-box;"></div>
+</body>
+</html>
