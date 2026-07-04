@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex" />
+    <title>pdfCreate.js API ドキュメント</title>
+    <!-- Tailwind CSS (CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome (Icons) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Prism.js (Syntax Highlighting) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+        pre[class*="language-"] {
+            margin: 0;
+            border-radius: 0.5rem;
+        }
+        /* スクロールバーのカスタマイズ */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans flex flex-col min-h-screen">
+
+    <!-- モバイル用ヘッダー -->
+    <header class="lg:hidden bg-slate-900 text-white p-4 flex justify-between items-center sticky top-0 z-30 shadow-md">
+        <div class="flex items-center gap-2">
+            <i class="fa-solid fa-file-pdf text-indigo-400 text-xl"></i>
+            <span class="font-bold">pdfCreate.js API</span>
+        </div>
+        <button id="menu-toggle" class="p-2 text-slate-300 hover:text-white focus:outline-none">
+            <i class="fa-solid fa-bars text-xl"></i>
+        </button>
+    </header>
+
+    <!-- メインレイアウトコンテナ -->
+    <div class="flex flex-1">
+        
+        <!-- サイドバー (ナビゲーション) -->
+        <aside id="sidebar" class="w-80 bg-white border-r border-slate-200 hidden lg:flex flex-col fixed top-0 bottom-0 left-0 z-20 transition-transform duration-300 lg:translate-x-0 -translate-x-full lg:pt-0 pt-16">
+            <div class="p-6 border-b border-slate-200 hidden lg:block">
+                <h1 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                    <i class="fa-solid fa-file-pdf text-indigo-600"></i>
+                    pdfCreate.js
+                </h1>
+                <p class="text-xs text-slate-500 mt-1">HTML to Vector PDF Generator</p>
+            </div>
+            
+            <nav class="flex-1 overflow-y-auto p-4 space-y-6">
+                <div>
+                    <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider block px-3 mb-2">概要</span>
+                    <ul class="space-y-1 text-sm">
+                        <li><a href="#overview" class="nav-link block px-3 py-2 rounded-md text-slate-600 hover:text-indigo-600 hover:bg-slate-50 transition-colors">モジュール概要</a></li>
+                        <li><a href="#notice" class="nav-link block px-3 py-2 rounded-md text-slate-600 hover:text-indigo-600 hover:bg-slate-50 transition-colors">注意事項と参照リンク</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider block px-3 mb-2">ガイド & 実装例</span>
+                    <ul class="space-y-1 text-sm">
+                        ＜li><a href="#requirements" class="nav-link block px-3 py-2 rounded-md text-slate-600 hover:text-indigo-600 hover:bg-slate-50 transition-colors">動作要件・前提条件</a></li>
+                        <li><a href="#examples" class="nav-link block px-3 py-2 rounded-md text-slate-600 hover:text-indigo-600 hover:bg-slate-50 transition-colors">クイックスタート</a></li>
+                        <li><a href="#styles" class="nav-link block px-3 py-2 rounded-md text-slate-600 hover:text-indigo-600 hover:bg-slate-50 transition-colors">推奨されるCSSスタイル</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider block px-3 mb-2">型定義 (Typedef)</span>
+                    <ul class="space-y-1 text-sm">
+                        <li><a href="#typedef-fontloadinginfo" class="nav-link block px-3 py-2 rounded-md text-slate-600 hover:text-indigo-600 hover:bg-slate-50 transition-colors">fontLoadingInfo</a></li>
+                        <li><a href="#typedef-fontconfig" class="nav-link block px-3 py-2 rounded-md text-slate-600 hover:text-indigo-600 hover:bg-slate-50 transition-colors">fontConfig</a></li>
+                        <li><a href="#typedef-debuginfo" class="nav-link block px-3 py-2 rounded-md text-slate-600 hover:text-indigo-600 hover:bg-slate-50 transition-colors">debugInfo</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider block px-3 mb-2">公開メソッド</span>
+                    <ul class="space-y-1 text-sm">
+                        <li>
+                            <a href="#func-loadingfonts" class="nav-link block px-3 py-2 rounded-md text-slate-600 hover:text-indigo-600 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                                <span>loadingFonts()</span>
+                                <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">Public</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#func-exportpdf" class="nav-link block px-3 py-2 rounded-md text-slate-600 hover:text-indigo-600 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                                <span>exportPDF()</span>
+                                <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">Public</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div>
+                    <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider block px-3 mb-2">内部メソッド</span>
+                    <ul class="space-y-1 text-sm">
+                        <li>
+                            <a href="#func-fetchfontasbase64" class="nav-link block px-3 py-2 rounded-md text-slate-600 hover:text-indigo-600 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                                <span>fetchFontAsBase64()</span>
+                                <span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600">Private</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#func-waitforclick" class="nav-link block px-3 py-2 rounded-md text-slate-600 hover:text-indigo-600 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                                <span>waitForClick()</span>
+                                <span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600">Private</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#func-injectannotations" class="nav-link block px-3 py-2 rounded-md text-slate-600 hover:text-indigo-600 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                                <span>injectAnnotations()</span>
+                                <span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600">Private</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#func-formatfontname" class="nav-link block px-3 py-2 rounded-md text-slate-600 hover:text-indigo-600 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                                <span>formatFontName()</span>
+                                <span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600">Private</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- メインコンテンツ -->
+        <main class="flex-1 lg:ml-80 p-6 md:p-12 max-w-5xl overflow-x-hidden">
+            
+            <!-- タイトルエリア -->
+            <section id="overview" class="mb-12 scroll-mt-20">
+                <div class="border-b border-slate-200 pb-6 mb-6">
+                    <span class="text-indigo-600 font-semibold text-sm">ES Module</span>
+                    <h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 mt-1">pdfCreate.js</h2>
+                    <p class="text-slate-600 mt-4 leading-relaxed">
+                        HTML構造を整形し、しおり・ハイパーリンク・カスタムフォントを維持したまま、高精度なベクトルPDFに変換・出力するクライアントサイド用モジュールです。
+                    </p>
+                </div>
+            </section>
+
+            <!-- 注意事項と参考リンク -->
+            <section id="notice" class="mb-12 scroll-mt-20">
+                <h3 class="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-circle-info text-amber-500"></i> 注意事項 & 参照ライブラリ
+                </h3>
+                
+                <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-md mb-6">
+                    <h4 class="font-semibold text-amber-900 text-sm mb-1">導入および運用上の注意</h4>
+                    <ul class="list-disc list-inside text-sm text-amber-800 space-y-1">
+                        <li>フォントの読み込みは非同期処理です。PDFを出力する前に確実に読み込みが完了している必要があります。</li>
+                        <li>PDFの寸法は、指定した最初のページのサイズに基づいて自動判定されます。CSSで対象要素の幅・高さを適切に調整してください。</li>
+                        <li>変換時には、対象ページ要素に一時的に <code class="bg-amber-100 px-1 rounded font-mono">.pdf-print-active</code> クラスが付与されます。レイアウト調整用CSSに活用してください。</li>
+                        <li>非印刷要素には <code class="bg-amber-100 px-1 rounded font-mono">.no-print</code> クラスをあらかじめ付与してください。</li>
+                        <li>デバッグモードを有効にすることで、処理のパフォーマンス計測やPDF出力前にプロンプトを一時停止させることが可能です。</li>
+                    </ul>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <a href="https://github.com/lmn1919/dompdf.js/blob/main/README.md" target="_blank" rel="noopener noreferrer" class="block p-4 bg-white border border-slate-200 rounded-lg hover:border-indigo-500 hover:shadow-sm transition-all">
+                        <span class="text-xs font-semibold text-slate-400 block mb-1">ベース描画エンジン</span>
+                        <span class="font-bold text-slate-900 block hover:text-indigo-600">dompdf.js <i class="fa-solid fa-arrow-up-right-from-square text-xs ml-1"></i></span>
+                    </a>
+                    <a href="https://pdf-lib.js.org/" target="_blank" rel="noopener noreferrer" class="block p-4 bg-white border border-slate-200 rounded-lg hover:border-indigo-500 hover:shadow-sm transition-all">
+                        <span class="text-xs font-semibold text-slate-400 block mb-1">結合・アノテーション注入</span>
+                        <span class="font-bold text-slate-900 block hover:text-indigo-600">pdf-lib <i class="fa-solid fa-arrow-up-right-from-square text-xs ml-1"></i></span>
+                    </a>
+                    <a href="https://github.com/lillallol/outline-pdf" target="_blank" rel="noopener noreferrer" class="block p-4 bg-white border border-slate-200 rounded-lg hover:border-indigo-500 hover:shadow-sm transition-all">
+                        <span class="text-xs font-semibold text-slate-400 block mb-1">しおり (アウトライン) 構成</span>
+                        <span class="font-bold text-slate-900 block hover:text-indigo-600">outline-pdf <i class="fa-solid fa-arrow-up-right-from-square text-xs ml-1"></i></span>
+                    </a>
+                </div>
+            </section>
+
+            <!-- 動作要件・前提条件 -->
+            <section id="requirements" class="mb-12 scroll-mt-20">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-list-check text-indigo-600"></i> 動作要件・前提条件
+                    </h3>
+                    <button onclick="copyCode(this, 'code-html-example')" class="text-xs bg-slate-200 hover:bg-indigo-600 hover:text-white px-3 py-1.5 rounded transition-all flex items-center gap-1">
+                            <i class="fa-regular fa-copy"></i> コピー
+                    </button>
+                </div>
+                <p class="text-sm text-slate-500 mb-3">本モジュールは、一部のライブラリがグローバルスコープ（`window` オブジェクト）に存在することを前提としています。モジュールを読み込む前に、HTML側で以下のスクリプトをロードしてください。</p>
+                <div class="overflow-hidden rounded-lg shadow border border-slate-200">
+                    <pre class="language-css"><code id="code-html-example" class="language-html">&lt;!-- PDF描画コアエンジン --&gt;
+&lt;!-- 使用するdompdf.min.jsは<a href="https://github.com/Sinosauropteryx-prima/English/tree/main/module/dompdf.min" style="color:#3882ff;">こちら</a> --&gt;
+&lt;script src="./dompdf.min.js"&gt;&lt;/script&gt;
+
+&lt;!-- PDF結合・アノテーション操作ライブラリ --&gt;
+&lt;script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"&gt;&lt;/script&gt;</code></pre>
+                </div>
+            </section>
+
+            <!-- 実装例 -->
+            <section id="examples" class="mb-12 scroll-mt-20">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-code text-indigo-600"></i> クイックスタート
+                    </h3>
+                    <button onclick="copyCode(this, 'code-example')" class="text-xs bg-slate-200 hover:bg-indigo-600 hover:text-white px-3 py-1.5 rounded transition-all flex items-center gap-1">
+                        <i class="fa-regular fa-copy"></i> コピー
+                    </button>
+                </div>
+                <div class="overflow-hidden rounded-lg shadow border border-slate-200">
+                    <pre class="language-javascript"><code id="code-example" class="language-javascript">import { loadingFonts, exportPDF } from './pdfCreate.js';
+
+// 1. フォントファイルの非同期読み込み
+await loadingFonts({
+    fontUrls: [
+       { family: 'Zen Maru Gothic', url: './fonts/ZenMaruGothic-Regular.ttf', isDefault: true },
+       { family: 'Zen Maru Gothic 700', url: './fonts/ZenMaruGothic-Bold.ttf', isDefault: false }
+    ],
+    msgElId: 'font-status-msg'
+});
+
+// 2. PDFの出力処理
+await exportPDF({
+   debug: false,
+   overlayFont: 'Zen Maru Gothic 700',
+   pagesSelector: '.a3-page',
+   outlineStr: '1||Section 1\n1|-|Subsection 1.1\n2||Section 2',
+   pdfFileName: 'output'
+});</code></pre>
+                </div>
+            </section>
+
+            <!-- 推奨されるスタイル -->
+            <section id="styles" class="mb-12 scroll-mt-20">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-wand-magic-sparkles text-indigo-600"></i> 推奨CSSスタイル
+                    </h3>
+                    <button onclick="copyCode(this, 'code-css-example')" class="text-xs bg-slate-200 hover:bg-indigo-600 hover:text-white px-3 py-1.5 rounded transition-all flex items-center gap-1">
+                        <i class="fa-regular fa-copy"></i> コピー
+                    </button>
+                </div>
+                <p class="text-sm text-slate-500 mb-3">出力時の一時的なスタイル制御を可能にするために、以下のスタイル定義を推奨します。</p>
+                <div class="overflow-hidden rounded-lg shadow border border-slate-200">
+                    <pre class="language-css"><code id="code-css-example" class="language-css">/* PDF出力時に適用される標準的なスタイル設定 */
+.pdf-print-active {
+   background-color: #ffffff !important;
+   margin: 0 !important;
+   box-shadow: none !important;
+   border-radius: 0 !important;
+}
+
+/* 印刷対象外（ヘッダーやボタンなど）を隠す指定 */
+.pdf-print-active .no-print {
+   display: none !important;
+}</code></pre>
+                </div>
+            </section>
+
+            <!-- 型定義 -->
+            <section id="typedefs" class="mb-12 border-t border-slate-200 pt-10">
+                <h3 class="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-2">
+                    <i class="fa-solid fa-cubes text-slate-600"></i> 型定義 (Typedef)
+                </h3>
+
+                <!-- fontLoadingInfo -->
+                <div id="typedef-fontloadinginfo" class="mb-8 scroll-mt-20 bg-white p-6 rounded-lg border border-slate-200 shadow-sm">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded font-mono font-semibold">@typedef</span>
+                        <h4 class="text-lg font-bold text-slate-900">fontLoadingInfo</h4>
+                    </div>
+                    <p class="text-sm text-slate-600 mb-4">読み込み対象となるカスタムフォントの情報を保持するオブジェクトです。</p>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-sm">
+                            <thead>
+                                <tr class="border-b border-slate-200 bg-slate-50">
+                                    <th class="py-2 px-3 font-semibold text-slate-700">プロパティ</th>
+                                    <th class="py-2 px-3 font-semibold text-slate-700">型</th>
+                                    <th class="py-2 px-3 font-semibold text-slate-700">説明</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b border-slate-100">
+                                    <td class="py-2 px-3 font-mono text-indigo-600">family</td>
+                                    <td class="py-2 px-3"><span class="bg-slate-100 px-1.5 py-0.5 rounded text-xs font-mono text-slate-800">string</span></td>
+                                    <td class="py-2 px-3 text-slate-600">登録するフォントファミリー名</td>
+                                </tr>
+                                <tr class="border-b border-slate-100">
+                                    <td class="py-2 px-3 font-mono text-indigo-600">url</td>
+                                    <td class="py-2 px-3"><span class="bg-slate-100 px-1.5 py-0.5 rounded text-xs font-mono text-slate-800">string</span></td>
+                                    <td class="py-2 px-3 text-slate-600">フォントファイル（.ttfなど）の相対または絶対パス</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-2 px-3 font-mono text-indigo-600">isDefault</td>
+                                    <td class="py-2 px-3"><span class="bg-slate-100 px-1.5 py-0.5 rounded text-xs font-mono text-slate-800">boolean</span></td>
+                                    <td class="py-2 px-3 text-slate-600">デフォルトフォントとして扱うかどうかのフラグ</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- fontConfig -->
+                <div id="typedef-fontconfig" class="mb-8 scroll-mt-20 bg-white p-6 rounded-lg border border-slate-200 shadow-sm">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded font-mono font-semibold">@typedef</span>
+                        <h4 class="text-lg font-bold text-slate-900">fontConfig</h4>
+                    </div>
+                    <p class="text-sm text-slate-600 mb-4">変換処理で用いられる、Base64形式にエンコード済みのフォント設定オブジェクトです。</p>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-sm">
+                            <thead>
+                                <tr class="border-b border-slate-200 bg-slate-50">
+                                    <th class="py-2 px-3 font-semibold text-slate-700">プロパティ</th>
+                                    <th class="py-2 px-3 font-semibold text-slate-700">型</th>
+                                    <th class="py-2 px-3 font-semibold text-slate-700">デフォルト値</th>
+                                    <th class="py-2 px-3 font-semibold text-slate-700">説明</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b border-slate-100">
+                                    <td class="py-2 px-3 font-mono text-indigo-600">fontFamily</td>
+                                    <td class="py-2 px-3"><span class="bg-slate-100 px-1.5 py-0.5 rounded text-xs font-mono text-slate-800">string</span></td>
+                                    <td class="py-2 px-3 text-slate-400">-</td>
+                                    <td class="py-2 px-3 text-slate-600">登録用のフォントファミリー名</td>
+                                </tr>
+                                <tr class="border-b border-slate-100">
+                                    <td class="py-2 px-3 font-mono text-indigo-600">fontBase64</td>
+                                    <td class="py-2 px-3"><span class="bg-slate-100 px-1.5 py-0.5 rounded text-xs font-mono text-slate-800">string</span></td>
+                                    <td class="py-2 px-3 text-slate-400">-</td>
+                                    <td class="py-2 px-3 text-slate-600">Base64に変換されたフォント文字列</td>
+                                </tr>
+                                <tr class="border-b border-slate-100">
+                                    <td class="py-2 px-3 font-mono text-indigo-600">fontUrl</td>
+                                    <td class="py-2 px-3"><span class="bg-slate-100 px-1.5 py-0.5 rounded text-xs font-mono text-slate-800">string</span></td>
+                                    <td class="py-2 px-3 font-mono text-slate-500">''</td>
+                                    <td class="py-2 px-3 text-slate-600">オプションのURL記述子</td>
+                                </tr>
+                                <tr class="border-b border-slate-100">
+                                    <td class="py-2 px-3 font-mono text-indigo-600">fontWeight</td>
+                                    <td class="py-2 px-3"><span class="bg-slate-100 px-1.5 py-0.5 rounded text-xs font-mono text-slate-800">number</span></td>
+                                    <td class="py-2 px-3 font-mono text-slate-500">400</td>
+                                    <td class="py-2 px-3 text-slate-600">フォントの太さ（400は通常ウェイト）</td>
+                                </tr>
+                                <tr class="border-b border-slate-100">
+                                    <td class="py-2 px-3 font-mono text-indigo-600">fontStyle</td>
+                                    <td class="py-2 px-3"><span class="bg-slate-100 px-1.5 py-0.5 rounded text-xs font-mono text-slate-800">string</span></td>
+                                    <td class="py-2 px-3 font-mono text-slate-500">'normal'</td>
+                                    <td class="py-2 px-3 text-slate-600">フォントスタイル（通常・斜体など）</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-2 px-3 font-mono text-indigo-600">isDefault</td>
+                                    <td class="py-2 px-3"><span class="bg-slate-100 px-1.5 py-0.5 rounded text-xs font-mono text-slate-800">boolean</span></td>
+                                    <td class="py-2 px-3 text-slate-400">-</td>
+                                    <td class="py-2 px-3 text-slate-600">デフォルトに指定するかどうかの真偽値</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- debugInfo -->
+                <div id="typedef-debuginfo" class="scroll-mt-20 bg-white p-6 rounded-lg border border-slate-200 shadow-sm">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded font-mono font-semibold">@typedef</span>
+                        <h4 class="text-lg font-bold text-slate-900">debugInfo</h4>
+                    </div>
+                    <p class="text-sm text-slate-600 mb-4">debugを有効にした際の実行速度や、段階的なプロセスのミリ秒記録を蓄積するオブジェクトです。</p>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-sm">
+                            <thead>
+                                <tr class="border-b border-slate-200 bg-slate-50">
+                                    <th class="py-2 px-3 font-semibold text-slate-700">オブジェクトパス</th>
+                                    <th class="py-2 px-3 font-semibold text-slate-700">プロパティ</th>
+                                    <th class="py-2 px-3 font-semibold text-slate-700">型</th>
+                                    <th class="py-2 px-3 font-semibold text-slate-700">説明</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b border-slate-100">
+                                    <td class="py-2 px-3 font-mono text-slate-700">debugInfo.dompdf</td>
+                                    <td class="py-2 px-3 font-mono text-indigo-600">start / end</td>
+                                    <td class="py-2 px-3 font-mono text-xs">number</td>
+                                    <td class="py-2 px-3 text-slate-600">dompdf.jsによるHTMLレンダリングの開始・終了時刻</td>
+                                </tr>
+                                <tr class="border-b border-slate-100">
+                                    <td class="py-2 px-3 font-mono text-slate-700">debugInfo.pdfLib</td>
+                                    <td class="py-2 px-3 font-mono text-indigo-600">start / end</td>
+                                    <td class="py-2 px-3 font-mono text-xs">number</td>
+                                    <td class="py-2 px-3 text-slate-600">pdf-lib結合、アノテーションインジェクションの開始・終了時刻</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-2 px-3 font-mono text-slate-700">debugInfo.outlinePdf</td>
+                                    <td class="py-2 px-3 font-mono text-indigo-600">start / end</td>
+                                    <td class="py-2 px-3 font-mono text-xs">number</td>
+                                    <td class="py-2 px-3 text-slate-600">outline-pdfによる目次（アウトライン）処理の開始・終了時刻</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 公開関数 (Public Functions) -->
+            <section id="public-functions" class="mb-12 border-t border-slate-200 pt-10">
+                <h3 class="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-2">
+                    <i class="fa-solid fa-cube text-emerald-600"></i> 公開メソッド (Public)
+                </h3>
+
+                <!-- loadingFonts -->
+                <div id="func-loadingfonts" class="mb-10 scroll-mt-20 bg-white rounded-lg border border-slate-200 overflow-hidden shadow-sm">
+                    <div class="bg-slate-50 px-6 py-4 border-b border-slate-200 flex justify-between items-center flex-wrap gap-2">
+                        <div class="flex items-center gap-2">
+                            <span class="bg-emerald-100 text-emerald-800 text-xs px-2.5 py-1 rounded font-semibold uppercase">Public</span>
+                            <span class="bg-blue-100 text-blue-800 text-xs px-2.5 py-1 rounded font-semibold uppercase">Async</span>
+                            <h4 class="text-lg font-mono font-bold text-slate-900">loadingFonts()</h4>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-slate-600 text-sm mb-4 leading-relaxed">
+                            渡されたフォントURL群を並行して非同期にダウンロードし、Base64形式に変換した上でモジュールスコープの変数へ格納します。
+                            フォントの処理順序は、渡された配列順に完全固定されます。
+                        </p>
+                        
+                        <h5 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">パラメーター</h5>
+                        <div class="overflow-x-auto mb-6">
+                            <table class="w-full text-left border-collapse text-sm">
+                                <thead>
+                                    <tr class="border-b border-slate-200 bg-slate-50">
+                                        <th class="py-2 px-3 font-semibold text-slate-700">引数名</th>
+                                        <th class="py-2 px-3 font-semibold text-slate-700">型</th>
+                                        <th class="py-2 px-3 font-semibold text-slate-700">デフォルト</th>
+                                        <th class="py-2 px-3 font-semibold text-slate-700">説明</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b border-slate-100">
+                                        <td class="py-2 px-3 font-mono text-indigo-600">config</td>
+                                        <td class="py-2 px-3 font-mono text-xs">Object</td>
+                                        <td class="py-2 px-3 font-mono text-xs">{}</td>
+                                        <td class="py-2 px-3 text-slate-600">設定オブジェクト。</td>
+                                    </tr>
+                                    <tr class="border-b border-slate-100">
+                                        <td class="py-2 px-3 font-mono text-indigo-600 pl-6">↳ fontUrls</td>
+                                        <td class="py-2 px-3 font-mono text-xs"><a href="#typedef-fontloadinginfo" class="text-indigo-600 hover:underline">fontLoadingInfo[]</a></td>
+                                        <td class="py-2 px-3 text-slate-400">-</td>
+                                        <td class="py-2 px-3 text-slate-600">フォント情報配列。</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 px-3 font-mono text-indigo-600 pl-6">↳ msgElId</td>
+                                        <td class="py-2 px-3 font-mono text-xs">string</td>
+                                        <td class="py-2 px-3 font-mono text-xs">''</td>
+                                        <td class="py-2 px-3 text-slate-600">読み込み完了またはエラー時のメッセージを表示するためのHTML要素のID（任意）。</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <h5 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">戻り値</h5>
+                        <p class="text-sm font-mono text-slate-600 mb-4"><span class="bg-slate-100 px-1 py-0.5 rounded">Promise&lt;void&gt;</span></p>
+
+                        <div class="bg-indigo-50 border-l-4 border-indigo-500 p-4 rounded-r-md">
+                            <h6 class="font-bold text-indigo-900 text-xs uppercase mb-1">エラーハンドリング仕様</h6>
+                            <p class="text-xs text-indigo-800 leading-relaxed">
+                                いずれかのフォントが取得不可能な場合は、例外を受け取ってフォールバックメッセージ（Helveticaによる代用）を表示し、安全に終了します。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- exportPDF -->
+                <div id="func-exportpdf" class="mb-10 scroll-mt-20 bg-white rounded-lg border border-slate-200 overflow-hidden shadow-sm">
+                    <div class="bg-slate-50 px-6 py-4 border-b border-slate-200 flex justify-between items-center flex-wrap gap-2">
+                        <div class="flex items-center gap-2">
+                            <span class="bg-emerald-100 text-emerald-800 text-xs px-2.5 py-1 rounded font-semibold uppercase">Public</span>
+                            <span class="bg-blue-100 text-blue-800 text-xs px-2.5 py-1 rounded font-semibold uppercase">Async</span>
+                            <h4 class="text-lg font-mono font-bold text-slate-900">exportPDF()</h4>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-slate-600 text-sm mb-4 leading-relaxed">
+                            ターゲットDOMの座標構造を取得・変形し、オーバーレイ表示で進捗を示しつつ、1ページごとに<code>dompdf.js</code>でベクターPDFへと変換処理をかけます。
+                            最終的に<code>pdf-lib</code>および<code>outline-pdf</code>を統合的に用い、しおりとしおり内ハイパーリンク付きの結合PDFファイルを生成し、自動ダウンロードをトリガーします。
+                        </p>
+                        
+                        <h5 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">パラメーター</h5>
+                        <div class="overflow-x-auto mb-6">
+                            <table class="w-full text-left border-collapse text-sm">
+                                <thead>
+                                    <tr class="border-b border-slate-200 bg-slate-50">
+                                        <th class="py-2 px-3 font-semibold text-slate-700">引数名</th>
+                                        <th class="py-2 px-3 font-semibold text-slate-700">型</th>
+                                        <th class="py-2 px-3 font-semibold text-slate-700">デフォルト</th>
+                                        <th class="py-2 px-3 font-semibold text-slate-700">説明</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b border-slate-100">
+                                        <td class="py-2 px-3 font-mono text-indigo-600">config</td>
+                                        <td class="py-2 px-3 font-mono text-xs">Object</td>
+                                        <td class="py-2 px-3 font-mono text-xs">{}</td>
+                                        <td class="py-2 px-3 text-slate-600">設定用オブジェクト。</td>
+                                    </tr>
+                                    <tr class="border-b border-slate-100">
+                                        <td class="py-2 px-3 font-mono text-indigo-600 pl-6">↳ debug</td>
+                                        <td class="py-2 px-3 font-mono text-xs">boolean</td>
+                                        <td class="py-2 px-3 font-mono text-xs">false</td>
+                                        <td class="py-2 px-3 text-slate-600">デバッグログの出力・処理時間測定。および出力確認用ボタンを表示。</td>
+                                    </tr>
+                                    <tr class="border-b border-slate-100">
+                                        <td class="py-2 px-3 font-mono text-indigo-600 pl-6">↳ overlayFont</td>
+                                        <td class="py-2 px-3 font-mono text-xs">string</td>
+                                        <td class="py-2 px-3 font-mono text-xs">''</td>
+                                        <td class="py-2 px-3 text-slate-600">読み込み中（進捗画面）で使用するフォントの名称。</td>
+                                    </tr>
+                                    <tr class="border-b border-slate-100">
+                                        <td class="py-2 px-3 font-mono text-indigo-600 pl-6">↳ pagesSelector</td>
+                                        <td class="py-2 px-3 font-mono text-xs">string</td>
+                                        <td class="py-2 px-3 text-slate-400">必須</td>
+                                        <td class="py-2 px-3 text-slate-600">印刷対象とする各ページコンポーネントのセレクタ名。</td>
+                                    </tr>
+                                    <tr class="border-b border-slate-100">
+                                        <td class="py-2 px-3 font-mono text-indigo-600 pl-6">↳ outlineStr</td>
+                                        <td class="py-2 px-3 font-mono text-xs">string</td>
+                                        <td class="py-2 px-3 font-mono text-xs">''</td>
+                                        <td class="py-2 px-3 text-slate-600">目次を構成するためのフォーマット済みアウトライン文字列。</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 px-3 font-mono text-indigo-600 pl-6">↳ pdfFileName</td>
+                                        <td class="py-2 px-3 font-mono text-xs">string</td>
+                                        <td class="py-2 px-3 text-slate-400">必須</td>
+                                        <td class="py-2 px-3 text-slate-600">ダウンロードされるファイルの名称（拡張子不要）。</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <h5 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">戻り値</h5>
+                        <p class="text-sm font-mono text-slate-600"><span class="bg-slate-100 px-1 py-0.5 rounded">Promise&lt;void&gt;</span></p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 内部関数 (Private Functions) -->
+            <section id="private-functions" class="mb-12 border-t border-slate-200 pt-10">
+                <h3 class="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-2">
+                    <i class="fa-solid fa-lock text-slate-500"></i> 内部メソッド (Private)
+                </h3>
+
+                <!-- fetchFontAsBase64 -->
+                <div id="func-fetchfontasbase64" class="mb-8 scroll-mt-20 bg-white rounded-lg border border-slate-200 overflow-hidden shadow-sm">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex justify-between items-center">
+                        <div class="flex items-center gap-2">
+                            <span class="bg-slate-200 text-slate-700 text-xs px-2 py-0.5 rounded font-mono">Private</span>
+                            <span class="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded font-mono">Async</span>
+                            <h4 class="font-mono font-bold text-slate-800 text-sm">fetchFontAsBase64()</h4>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-sm text-slate-600 mb-4">
+                            指定パスにあるフォントデータを <code>fetch</code> APIでフェッチし、<code>FileReader</code> を使ってBase64形式へシリアライズするヘルパー関数です。
+                        </p>
+                        <h5 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">パラメーター</h5>
+                        <p class="text-sm text-slate-600 font-mono pl-2 mb-4">url (<span class="text-indigo-600">string</span>) - ターゲットのフォントパス</p>
+                        
+                        <h5 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">戻り値</h5>
+                        <p class="text-sm text-slate-600 font-mono pl-2">Promise&lt;string&gt; - Base64エンコード文字列</p>
+                    </div>
+                </div>
+
+                <!-- waitForClick -->
+                <div id="func-waitforclick" class="mb-8 scroll-mt-20 bg-white rounded-lg border border-slate-200 overflow-hidden shadow-sm">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex justify-between items-center">
+                        <div class="flex items-center gap-2">
+                            <span class="bg-slate-200 text-slate-700 text-xs px-2 py-0.5 rounded font-mono">Private</span>
+                            <h4 class="font-mono font-bold text-slate-800 text-sm">waitForClick()</h4>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-sm text-slate-600 mb-4">
+                            デバッグ時に処理を保留させるため、特定のボタンイベントトリガーを待つためのPromiseを返却します。
+                        </p>
+                        <h5 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">パラメーター</h5>
+                        <p class="text-sm text-slate-600 font-mono pl-2 mb-4">buttonId (<span class="text-indigo-600">string</span>) - 対象となるボタン要素ID</p>
+                        
+                        <h5 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">戻り値</h5>
+                        <p class="text-sm text-slate-600 font-mono pl-2">Promise&lt;void&gt;</p>
+                    </div>
+                </div>
+
+                <!-- injectAnnotations -->
+                <div id="func-injectannotations" class="mb-8 scroll-mt-20 bg-white rounded-lg border border-slate-200 overflow-hidden shadow-sm">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex justify-between items-center">
+                        <div class="flex items-center gap-2">
+                            <span class="bg-slate-200 text-slate-700 text-xs px-2 py-0.5 rounded font-mono">Private</span>
+                            <h4 class="font-mono font-bold text-slate-800 text-sm">injectAnnotations()</h4>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-sm text-slate-600 mb-4 leading-relaxed">
+                            DOM上のアンカータグ <code>&lt;a href="..."&gt;</code> の実座標と、生成されたベクターPDF上の座標系とをマッピング（スケーリングと原点変換）し、
+                            該当のPDFオブジェクト位置にインタラクティブなハイパーリンク（ベクターアノテーション）を動的に注入します。
+                        </p>
+                        
+                        <div class="bg-slate-100 p-4 rounded-lg mb-6 border border-slate-200">
+                            <h5 class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">座標計算ロジック</h5>
+                            <p class="text-xs text-slate-600 leading-relaxed mb-2">
+                                HTMLとPDFでは<b>縦方向の原点が逆転している</b>（HTMLは左上、PDFは左下）ため、以下の公式が適用されています。
+                            </p>
+                            <code class="block bg-slate-800 text-slate-200 p-2 rounded font-mono text-[11px] overflow-x-auto">
+                                scale = pdfPageWidth / parentRect.width;<br>
+                                x1 = (rect.left - parentRect.left) * scale;<br>
+                                y1 = pdfPageHeight - (rect.bottom - parentRect.top) * scale; // Y軸反転
+                            </code>
+                        </div>
+
+                        <h5 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">パラメーター</h5>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse text-xs">
+                                <thead>
+                                    <tr class="border-b border-slate-200 bg-slate-50">
+                                        <th class="py-2 px-3 font-semibold text-slate-700">引数</th>
+                                        <th class="py-2 px-3 font-semibold text-slate-700">型</th>
+                                        <th class="py-2 px-3 font-semibold text-slate-700">説明</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b border-slate-100">
+                                        <td class="py-2 px-3 font-mono text-indigo-600">pdfDoc</td>
+                                        <td class="py-2 px-3 font-mono text-slate-500">PDFLib.PDFDocument</td>
+                                        <td class="py-2 px-3 text-slate-600">PDFLibのドキュメントインスタンス</td>
+                                    </tr>
+                                    <tr class="border-b border-slate-100">
+                                        <td class="py-2 px-3 font-mono text-indigo-600">pages</td>
+                                        <td class="py-2 px-3 font-mono text-slate-500">PDFLib.PDFPage[]</td>
+                                        <td class="py-2 px-3 text-slate-600">各ページのインスタンス配列</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 px-3 font-mono text-indigo-600">originalPages</td>
+                                        <td class="py-2 px-3 font-mono text-slate-500">Object[]</td>
+                                        <td class="py-2 px-3 text-slate-600">ソース元となるDOMツリーのエレメント群配列</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- formatFontName -->
+                <div id="func-formatfontname" class="scroll-mt-20 bg-white rounded-lg border border-slate-200 overflow-hidden shadow-sm">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex justify-between items-center">
+                        <div class="flex items-center gap-2">
+                            <span class="bg-slate-200 text-slate-700 text-xs px-2 py-0.5 rounded font-mono">Private</span>
+                            <h4 class="font-mono font-bold text-slate-800 text-sm">formatFontName()</h4>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-sm text-slate-600 mb-4">
+                            フォント名をパースする際、CSSで予約された総称フォント名（<code>sans-serif</code>など）を除くフォント名について、シングルクォーテーションで安全にラップする文字列処理を行います。
+                        </p>
+                        <h5 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">パラメーター</h5>
+                        <p class="text-sm text-slate-600 font-mono pl-2 mb-4">fontFamily (<span class="text-indigo-600">string</span>) - 評価するフォント名</p>
+                        
+                        <h5 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">戻り値</h5>
+                        <p class="text-sm text-slate-600 font-mono pl-2">string - フォーマットが標準化されたCSS用フォント定義文字列</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- フッター -->
+    <footer class="bg-slate-900 text-slate-400 text-center py-6 text-xs border-t border-slate-800 lg:ml-80">
+        <p>&copy; 2026 pdfCreate.js Module Documentation.</p>
+    </footer>
+
+    <!-- JavaScript (インタラクション) -->
+    <script>
+        // コピー機能の実装
+        function copyCode(button, elementId) {
+            const codeText = document.getElementById(elementId).innerText;
+            navigator.clipboard.writeText(codeText).then(() => {
+                const originalHtml = button.innerHTML;
+                button.innerHTML = '<i class="fa-solid fa-check text-green-500"></i> <span class="text-xs text-green-500">コピーしました</span>';
+                setTimeout(() => {
+                    button.innerHTML = originalHtml;
+                }, 2000);
+            }).catch(err => {
+                console.error('クリップボードのコピーに失敗しました:', err);
+            });
+        }
+
+        // モバイルナビゲーションの切り替え
+        const menuToggle = document.getElementById('menu-toggle');
+        const sidebar = document.getElementById('sidebar');
+
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('hidden');
+            sidebar.classList.toggle('flex');
+            sidebar.classList.toggle('-translate-x-full');
+            sidebar.classList.toggle('translate-x-0');
+        });
+
+        // リンクをクリックした際にモバイル用サイドバーを閉じる
+        const navLinks = document.querySelectorAll('.nav-link');
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth < 1024) { // lg未満の場合のみ
+                    sidebar.classList.add('hidden');
+                    sidebar.classList.remove('flex');
+                    sidebar.classList.add('-translate-x-full');
+                    sidebar.classList.remove('translate-x-0');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
