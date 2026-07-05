@@ -159,7 +159,7 @@
                     <h4 class="font-semibold text-amber-900 text-sm mb-1">導入および運用上の注意</h4>
                     <ul class="list-disc list-inside text-sm text-amber-800 space-y-1">
                         <li>フォントの読み込みは非同期処理です。PDFを出力する前に確実に読み込みが完了している必要があります。</li>
-                        <li>自分でフォントファイルを用意する場合は、pdfCreate.jsの相対パスをfontUrlsのurlに指定してください。フォントファイルが見つからない場合は、標準フォント（Helvetica）で代用されます。</li>
+                        <li>自分でフォントファイルを用意する場合は、pdfCreate.jsを使用するhtmlファイルの相対パスをfontUrlsのurlに指定してください。フォントファイルが見つからない場合は、標準フォント（Helvetica）で代用されます。</li>
                         <li>PDFの寸法は、指定した最初のページのサイズに基づいて自動判定されます。CSSで対象要素の幅・高さを適切に調整してください。</li>
                         <li>変換時には、対象ページ要素に一時的に <code class="bg-amber-100 px-1 rounded font-mono">.pdf-print-active</code> クラスが付与されます。レイアウト調整用CSSに活用してください。</li>
                         <li>非印刷要素には <code class="bg-amber-100 px-1 rounded font-mono">.no-print</code> クラスをあらかじめ付与してください。</li>
