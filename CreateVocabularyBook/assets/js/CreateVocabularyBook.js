@@ -225,6 +225,7 @@ function setupDragAndDrop() {
     });
 }
 
+// ファイル入力を設定する
 function setupFileInput() {
     csvFileInput.addEventListener('change', handleFileSelect, false);
 }
@@ -247,7 +248,7 @@ function handleFileSelect(event) {
 
 // CSVパーサー (行型・列型の自動判定に対応！、CORSエラーを回避するプレーンなJavaScript化を維持)
 function parseCSVAndLoad(text) {
-    const cleanText = text.replace(/^\uFEFF/, '');　// BOMを削除
+    const cleanText = text.replace(/^\uFEFF/, ''); // BOMを削除
     const lines = cleanText.split(/\r?\n/);
     if (lines.length < 2) return;
 
@@ -263,13 +264,21 @@ function parseCSVAndLoad(text) {
     
     for (let j = 0; j < line.length; j++) {
         const char = line[j];
+        const nextChar = line[j + 1];
+        
         if (char === '"') {
-        inQuotes = !inQuotes;
+            if (inQuotes && nextChar === '"') {
+                // クォート内で "" が並んだ場合は1つのダブルクォーテーションにする
+                currentVal += '"';
+                j++; // 次の " をスキップ
+            } else {
+                inQuotes = !inQuotes;
+            }
         } else if (char === ',' && !inQuotes) {
-        row.push(currentVal.trim());
-        currentVal = '';
+            row.push(currentVal.trim());
+            currentVal = '';
         } else {
-        currentVal += char;
+            currentVal += char;
         }
     }
     row.push(currentVal.trim());
@@ -282,10 +291,11 @@ function parseCSVAndLoad(text) {
 
     // 行型（従来形式）か、列型（転置形式）かをヘッダーの並びで自動判定
     // 縦方向に「番号」「単語」「名詞」が並んでいる場合は「列型（転置が必要）」
+    // パースされた時点でクォートは外れているため、単純なトリムで正しく比較判定可能
     const isColumnFormat = 
-    rawMatrix[0]?.[0]?.replace(/["']/g, '') === '番号' && 
-    rawMatrix[1]?.[0]?.replace(/["']/g, '') === '単語' && 
-    rawMatrix[2]?.[0]?.replace(/["']/g, '') === '名詞';
+    rawMatrix[0]?.[0]?.trim() === '番号' && 
+    rawMatrix[1]?.[0]?.trim() === '単語' && 
+    rawMatrix[2]?.[0]?.trim() === '名詞';
 
     if (isColumnFormat) {
     // 【列型（転置が必要な形式）のパース処理】
@@ -362,7 +372,7 @@ function processGroupedWords() {
         }
     }
 
-    let cleanId = String(item.id).replace(/["']/g, '').trim();
+    let cleanId = String(item.id).trim();
     
     if (cleanId === '') {
         cleanId = lastValidId; // 空の場合は直前の有効なIDに紐づける
@@ -386,7 +396,7 @@ function processGroupedWords() {
     const targetKeys = ['verb', 'adj', 'adv'];
     for (let key of targetKeys) {
         if (mainWord[key]) {
-        let val = String(mainWord[key]).replace(/["']/g, '').trim();
+        let val = String(mainWord[key]).trim();
         // 全角カッコ限定でのマッチ
         const match = val.match(/^（([^）]+)）/);
         if (match) {
@@ -462,7 +472,7 @@ function getPartsOfSpeech(item, isMainWord = false) {
 
     mapping.forEach(m => {
     if (item[m.key] && String(item[m.key]).trim() !== '') {
-        let originalMeaning = String(item[m.key]).replace(/["']/g, '').trim();
+        let originalMeaning = String(item[m.key]).trim();
         let formattedMeaning = formatMeaningText(originalMeaning); // 特定の文字（；、カッコなど）の装飾・置換処理を適用
         list.push({
         name: m.label,
