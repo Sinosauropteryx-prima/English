@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 検索エンジンへのインデックスを拒否するメタタグを設置 -->
+    <meta name="robots" content="noindex" />
+    <title>My Tools Portfolio</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts の読み込み -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- アイコン用の Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- ヘッダーエリア -->
+    <header class="header">
+        <div class="container">
+            <h1 class="header-title">Tool Showcase</h1>
+        </div>
+    </header>
+
+    <!-- メインコンテンツ -->
+    <main class="main-content container">
+        <!-- 検索・フィルターセクション -->
+        <section class="filter-section">
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input type="text" id="searchInput" placeholder="ツール名やキーワードで検索...">
+            </div>
+            <div class="filter-buttons" id="filterButtons">
+                <button class="filter-btn active" data-filter="all">すべて</button>
+                <button class="filter-btn" data-filter="english">英語学習</button>
+            </div>
+        </section>
+
+        <!-- ツール一覧表示エリア -->
+        <section class="tools-grid" id="toolsGrid">
+            
+            <!-- ▼▼▼ ツール追加時はここから下の article をコピペして編集します ▼▼▼ -->
+            <!-- 
+            ツールを追加したい場合は、index.html の中にある article タグを丸ごと複製して変更を加えます。以下の2点を指定するだけで、JavaScriptが自動的に要素を認識します。
+            1. data-category属性の値
+                <article class="tool-card" data-category="xxxx">
+                この xxxx に、utility、game、design などのカテゴリ名を設定してください（検索ボタンに設定された data-filter の値と連動します）。
+            2. ボタンの削除
+                「使ってみる」や「GitHub」リンクが不要なツールであれば、その <a> タグの行をHTMLから削除（またはコメントアウト）するだけでボタンは綺麗に非表示になります。
+            3. タグの数
+                タグ（<span class="tag">HTML</span>）も自由に増やす、または減らすことができます。入力された検索文字はこのタグの文字列も拾ってフィルタリングします。
+            -->
+            
+            <!-- ツール 1 -->
+            <article class="tool-card" data-category="english">
+                <img src="./CreateVocabularyBook/image.png" alt="英単語帳作成ツール" class="tool-image">
+                <div class="tool-info">
+                    <div class="tool-header">
+                        <h3 class="tool-title">英単語帳作成ツール</h3>
+                    </div>
+                    <p class="tool-desc">csvファイルから英単語帳を作成できるツールです。</p>
+                    <div class="tool-tags">
+                        <span class="tag">HTML</span>
+                        <span class="tag">CSS</span>
+                        <span class="tag">JavaScript</span>
+                    </div>
+                    <div class="tool-actions">
+                        <a href="https://sinosauropteryx-prima.github.io/English/CreateVocabularyBook/CreateVocabularyBook.html" target="_blank" rel="noopener noreferrer" class="btn btn-primary"><i class="fa-solid fa-play"></i>使ってみる</a>
+                        <a href="https://github.com/Sinosauropteryx-prima/English/tree/main/CreateVocabularyBook" target="_blank" rel="noopener noreferrer" class="btn btn-secondary"><i class="fa-brands fa-github"></i>GitHub</a>
+                    </div>
+                </div>
+            </article>
+
+            <!-- ▲▲▲ ツール追加用のコピペエリアここまで ▲▲▲ -->
+
+            <!-- 検索結果が0件のときに表示するメッセージ（あらかじめ配置しておきます） -->
+            <p id="noResultsMessage" class="no-results hide">該当するツールが見つかりませんでした。</p>
+
+        </section>
+    </main>
+
+    <!-- フッター -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 My Tools Portfolio. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
