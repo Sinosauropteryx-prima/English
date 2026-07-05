@@ -1528,10 +1528,10 @@ document.getElementById('download-template').addEventListener('click', () => {
 // DOMContentLoadedイベントでフォントの遅延ロードを開始
 window.addEventListener('DOMContentLoaded', async () => {
     const fontUrls = [
-        { family: 'Zen Maru Gothic 400', url: '../../../source/fonts/ShareTechMono-Regular.ttf', isDefault: true },
-        { family: 'Zen Maru Gothic 500', url: '../../../source/fonts/ZenMaruGothic-Medium.ttf', isDefault: false },
-        { family: 'Zen Maru Gothic 700', url: '../../../source/fonts/ZenMaruGothic-Bold.ttf', isDefault: false },
-        { family: 'Share Tech Mono 400', url: '../../../source/fonts/ShareTechMono-Regular.ttf', isDefault: false }
+        { family: 'Zen Maru Gothic 400', url: '../../source/fonts/ShareTechMono-Regular.ttf', isDefault: true },
+        { family: 'Zen Maru Gothic 500', url: '../../source/fonts/ZenMaruGothic-Medium.ttf', isDefault: false },
+        { family: 'Zen Maru Gothic 700', url: '../../source/fonts/ZenMaruGothic-Bold.ttf', isDefault: false },
+        { family: 'Share Tech Mono 400', url: '../../source/fonts/ShareTechMono-Regular.ttf', isDefault: false }
     ];
     await loadingFonts({ fontUrls: fontUrls, msgElId: 'font-status-msg' });
 });
